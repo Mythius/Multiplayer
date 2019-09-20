@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Io Game</title>
+	<link rel="stylesheet" href="style.css">
+	<script src='/socket.io/socket.io.js'></script>
+	<script src='helpers.js'></script>
+	<script src='grid.js'></script>
+</head>
+<body>
+	<div></div>
+	<script>
+		var socket = io();
+		var id,connected=false,once=true;
+		var colors=[{ch:'w',c:'blue'},{ch:'g',c:'green'},{ch:'s',c:'gray'},{ch:'t',c:'darkgreen'},{ch:'n',c:'black'},{ch:'i',c:'white'},{ch:'au',c:'gold'}];
+		var ins={ArrowUp:false,ArrowDown:false,ArrowLeft:false,ArrowRight:false,z:false};
+
+
+		var board = new Grid(obj('div'),15,15,45);
+		board.setColorAll('#444');
+
+		socket.on('getUsername',()=>{socket.emit('user',prompt('Enter a Username'))});
+		socket.on('id',p=>{
+			console.log(p);
+			id=p;
+			connected=true;
+			addEvents();
+		});
+		socket.on('render',function(w,h,world,players){
+			if(connected){
+				var me = players.filter(p=>p.id==id)[0];
+				console.log(me);
+				var ox = me.x-7,oy=me.y-7;
+				for(let i=1;i<=15;i++){
+					for(let j=1;j<=15;j++){
+						var s = colors.filter(c=>c.ch==world[pos(ox+j,oy+i)]);
+						var c = s[0] ? s[0].c : 'black';
+						if(inBounds(ox+j,oy+i))board.setColor(j,i,c);
+						else board.setColor(j,i,'black')
+					}
+				}
+				if(once) once=false;
+				function pos(x,y){
+					return y*w-w+1+x;
+					//
+				}
+				function typeAt(x,y){
+					if(inBounds(x,y)) return world[pos(x,y)];
+					else return 'n';
+				}
+				function inBounds(x,y){
+					return x>0 && x<=w && y>0 && y<=h;
+					//
+				}
+				board.setImageAll('');
+				for(let p of players){
+					if(p.id==id){
+						board.setImage(7,7,'player1.png');
+					} else {
+						board.setImage(me.x-p.x,me.y-p.y,'player2.png');
+					}
+				}
+			}
+		});
+		socket.on('getInputs',()=>{socket.emit('inputs',{ins,id})});
+
+		function addEvents(){
+			document.on('keydown',function(e){
+				if(e.key in ins) ins[e.key]=true;
+			});
+			document.on('keyup',function(e){
+				if(e.key in ins) ins[e.key]=false;
+			});
+		}
+
+
+	</script>
+</body>
+</html>
