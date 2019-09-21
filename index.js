@@ -22,12 +22,12 @@ http.listen(port,()=>{console.log('Serving Port: '+port)});
 
 // HANDLE CONNECTION TO WEBPAGES
 io.on('connection',function(socket){
-	io.emit('getUsername');
+	socket.emit('getUsername');
 	socket.on('user',function(name){
 		console.log('Player connected with Username: '+name);
 		var p = new Player(name);
 		users.push(p);
-		io.emit('id',p.id);
+		socket.emit('id',p.id);
 	});
 	socket.on('inputs',(i)=>{inputs.push(i)});
 	socket.on('disconnect',()=>{
@@ -36,7 +36,7 @@ io.on('connection',function(socket){
 });
 
 // GAME VARIABLES
-const CPS = 1, seed = 500;
+const CPS = 15, seed = 500;
 var users=[],world=[],inputs=[],uniq=0;
 var width=100,height=100;
 // Water , Grass , Stone , Tree , Null , Ice , Gold
@@ -50,11 +50,6 @@ class Player{
 		this.x=5;
 		this.y=5;
 	}
-}
-function Tile(x,y){
-	this.x=x;
-	this.y=y;
-	this.value=char;
 }
 
 // GAME FUNCTIONS 
@@ -113,7 +108,6 @@ function handleInputs(){
 		let u = users.filter(p=>p.id==i.id);
 		let usr = u ? u[0] : false;
 		if(usr){
-			console.log(i.id);
 			var input = i.ins;
 			if(input.ArrowUp) usr.y--;
 			if(input.ArrowDown) usr.y++;

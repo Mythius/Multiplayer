@@ -14,14 +14,13 @@
 		var id,connected=false,once=true;
 		var colors=[{ch:'w',c:'blue'},{ch:'g',c:'green'},{ch:'s',c:'gray'},{ch:'t',c:'darkgreen'},{ch:'n',c:'black'},{ch:'i',c:'white'},{ch:'au',c:'gold'}];
 		var ins={ArrowUp:false,ArrowDown:false,ArrowLeft:false,ArrowRight:false,z:false};
+		const vw = 15,vh = 15;
 
-
-		var board = new Grid(obj('div'),15,15,45);
+		var board = new Grid(obj('div'),vw,vh,Math.floor(window.innerHeight/vh));
 		board.setColorAll('#444');
 
 		socket.on('getUsername',()=>{socket.emit('user',prompt('Enter a Username'))});
 		socket.on('id',p=>{
-			console.log(p);
 			id=p;
 			connected=true;
 			addEvents();
@@ -29,10 +28,9 @@
 		socket.on('render',function(w,h,world,players){
 			if(connected){
 				var me = players.filter(p=>p.id==id)[0];
-				console.log(me);
 				var ox = me.x-7,oy=me.y-7;
-				for(let i=1;i<=15;i++){
-					for(let j=1;j<=15;j++){
+				for(let i=1;i<=vh;i++){
+					for(let j=1;j<=vw;j++){
 						var s = colors.filter(c=>c.ch==world[pos(ox+j,oy+i)]);
 						var c = s[0] ? s[0].c : 'black';
 						if(inBounds(ox+j,oy+i))board.setColor(j,i,c);
@@ -53,11 +51,12 @@
 					//
 				}
 				board.setImageAll('');
+				var ox = 8,oy = 8;
 				for(let p of players){
 					if(p.id==id){
-						board.setImage(7,7,'player1.png');
+						board.setImage(ox,oy,'player1.png');
 					} else {
-						board.setImage(me.x-p.x,me.y-p.y,'player2.png');
+						board.setImage(p.x-me.x+ox,p.y-me.y+oy,'player2.png');
 					}
 				}
 			}

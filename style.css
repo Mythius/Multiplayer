@@ -1,7 +1,6 @@
 body{
 	margin: 0;
 }
-
 tile{
 	image-rendering: pixelated;
 	box-sizing: border-box;
