@@ -6,7 +6,7 @@ var io = require('socket.io')(http);
 
 // CONNECTION VARIABLES
 const port = 80;
-const path = 'C:/Users/southwickm/Io Game/';
+const path = 'C:/Users/south/Desktop/multiplayer/';
 
 
 // HANDLE GET REQUESTS FROM WEBPAGES
