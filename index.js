@@ -16,7 +16,7 @@ app.get('/grid.js',(req,res)=>{res.sendFile(path+'grid.js')});
 app.get('/style.css',(req,res)=>{res.sendFile(path+'style.css')});
 app.get('/player1.png',(req,res)=>{res.sendFile(path+'player1.png')});
 app.get('/player2.png',(req,res)=>{res.sendFile(path+'player2.png')});
-
+app.get('/favicon.ico',(req,res)=>{res.sendFile(path+'favicon.ico')});
 // SERVE PORT
 http.listen(port,()=>{console.log('Serving Port: '+port)});
 
