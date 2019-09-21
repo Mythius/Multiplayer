@@ -39,7 +39,7 @@
 				}
 				if(once) once=false;
 				function pos(x,y){
-					return y*w-w+1+x;
+					return y*w-w-2+x;
 					//
 				}
 				function typeAt(x,y){
@@ -47,7 +47,7 @@
 					else return 'n';
 				}
 				function inBounds(x,y){
-					return x>0 && x<=w && y>0 && y<=h;
+					return x>1 && x<=w+1 && y>1 && y<h+6;
 					//
 				}
 				board.setImageAll('');

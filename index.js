@@ -18,20 +18,25 @@ app.get('/player1.png',(req,res)=>{res.sendFile(path+'player1.png')});
 app.get('/player2.png',(req,res)=>{res.sendFile(path+'player2.png')});
 app.get('/favicon.ico',(req,res)=>{res.sendFile(path+'favicon.ico')});
 // SERVE PORT
-http.listen(port,()=>{console.log('Serving Port: '+port)});
+http.listen(port,()=>{console.log(`=== Serving Port: ${port} ===\n`)});
 
 // HANDLE CONNECTION TO WEBPAGES
 io.on('connection',function(socket){
+	var localid,localname;
 	socket.emit('getUsername');
 	socket.on('user',function(name){
-		console.log('Player connected with Username: '+name);
+		console.log(`"${name}" Connected`);
 		var p = new Player(name);
 		users.push(p);
 		socket.emit('id',p.id);
+		localid=p.id;
+		localname=name;
 	});
 	socket.on('inputs',(i)=>{inputs.push(i)});
 	socket.on('disconnect',()=>{
-		console.log('User Disconnected');
+		var usr = users.filter(e=>e.id==localid)[0];
+		console.log(localname+' Disconnected');
+		users.splice(users.indexOf(usr),1);
 	});
 });
 
@@ -103,10 +108,11 @@ function loop(){
 }
 
 function handleInputs(){
-	var a=0;
+	var a=0,usus=[],l=users.length;
 	for(let i of inputs){
 		let u = users.filter(p=>p.id==i.id);
 		let usr = u ? u[0] : false;
+		usus.push(i.id);
 		if(usr){
 			var input = i.ins;
 			if(input.ArrowUp) usr.y--;
@@ -114,7 +120,7 @@ function handleInputs(){
 			if(input.ArrowLeft) usr.x--;
 			if(input.ArrowRight) usr.x++;
 			usr.x = Math.min(Math.max(usr.x,1),width);
-			usr.y = Math.min(Math.max(usr.y,1),height);
+			usr.y = Math.min(Math.max(usr.y,1),height-1);
 		}
 	}
 	inputs=[];
@@ -131,6 +137,8 @@ function random(min,max){
 }
 
 // START GAME
+console.log("Generating World\n...\nComplete!");
 generateWorld(width,height);
 //console.log(world);
+console.log(`Starting Game Clock at ${CPS} calculations per second.\n`)
 setInterval(loop,1000/CPS);
