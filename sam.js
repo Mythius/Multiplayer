@@ -7,7 +7,6 @@ var SAM = function(grid,obj,w,h){
 	var ai_algor;
 
 	obj.style.position='absolute';
-	obj.style.transition='left .3s linear, top .3s linear'; 
 	obj.style.width=w+'px';
 	obj.style.height=h+'px';
 	setPos(x,y);

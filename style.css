@@ -2,8 +2,6 @@ body{
 	margin: 0;
 }
 tile{
-	transition: background-color .15s;
 	image-rendering: pixelated;
-	box-sizing: border-box;
-	border: 1px solid black;
+ 	box-sizing: border-box;
 }

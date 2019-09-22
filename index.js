@@ -2,7 +2,28 @@
 var app = require('express')();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
+var fs = require('fs');
 
+// PROTOTYPES
+
+Array.prototype.last=function(){
+	return this[this.length-1];
+	//
+}
+
+// READ / WRITE FUNCTIONS
+
+function save(n,t){
+	fs.writeFile(n,t,e=>{
+		console.log(e);
+	});
+}
+function read(n,c){
+	fs.readFile(n,(e,b)=>{
+		if(e) console.log(e);
+		else c(b.toString());
+	});
+}
 
 // CONNECTION VARIABLES
 const port = 80;
@@ -10,13 +31,18 @@ const path = 'C:/Users/south/Desktop/multiplayer/';
 
 
 // HANDLE GET REQUESTS FROM WEBPAGES
-app.get('/',(req,res)=>{res.sendFile(path+'index.html')});
-app.get('/helpers.js',(req,res)=>{res.sendFile(path+'helpers.js')});
-app.get('/grid.js',(req,res)=>{res.sendFile(path+'grid.js')});
-app.get('/style.css',(req,res)=>{res.sendFile(path+'style.css')});
-app.get('/player1.png',(req,res)=>{res.sendFile(path+'player1.png')});
-app.get('/player2.png',(req,res)=>{res.sendFile(path+'player2.png')});
-app.get('/favicon.ico',(req,res)=>{res.sendFile(path+'favicon.ico')});
+function serveFiles(){
+	app.get('/',(req,res)=>{res.sendFile(path+'index.html')});
+	read('files.txt',d=>{
+		var e = d.split(',').map(e=>e.trim());
+		for(let l of e){
+			app.get('/'+l.split('/').last(),(req,res)=>{res.sendFile(path+l)});
+		}
+	});
+}
+
+serveFiles();
+
 // SERVE PORT
 http.listen(port,()=>{console.log(`=== Serving Port: ${port} ===\n`)});
 
@@ -27,25 +53,30 @@ io.on('connection',function(socket){
 	socket.on('user',function(name){
 		console.log(`"${name}" Connected`);
 		var p = new Player(name);
-		users.push(p);
 		socket.emit('id',p.id);
 		localid=p.id;
 		localname=name;
+		io.emit('newplayer',p.id);
+		for(let u of users){
+			socket.emit('newplayer',u.id);
+		}
+		users.push(p);
 	});
 	socket.on('inputs',(i)=>{inputs.push(i)});
 	socket.on('disconnect',()=>{
 		var usr = users.filter(e=>e.id==localid)[0];
 		console.log(localname+' Disconnected');
 		users.splice(users.indexOf(usr),1);
+		io.emit('discon',localid);
 	});
 });
 
 // GAME VARIABLES
-const CPS = 15, seed = 500;
+const CPS = 6, seed = 100;
 var users=[],world=[],inputs=[],uniq=0;
-var width=100,height=100;
-// Water , Grass , Stone , Tree , Null , Ice , Gold
-var ground_types=['w','g','g','g','s','t','i','au','n'];
+var width=80,height=80;
+// Water , Grass , Stone , Tree , Null , Dirt , Gold
+var ground_types=['w','g','g','g','s','t','d','au','n'];
 
 // GAME CLASSES
 class Player{
@@ -54,6 +85,17 @@ class Player{
 		this.name=name;
 		this.x=5;
 		this.y=5;
+		this.population=[];
+		this.inventory=[];
+	}
+}
+
+class Block{
+	constructor(t,x,y){
+		this.type=t;
+		this.x=x;
+		this.y=y;
+		this.solid=false;
 	}
 }
 
@@ -74,16 +116,31 @@ function inBounds(x,y){
 }
 
 function generateWorld(w,h){
+	var result;
+	function addType(t,c){
+		for(let i=0;i<c;i++) result.unshift(t);
+		//
+	}
+	function removeType(t){
+		let l = result.length;
+		while(l--){
+			if(result[l]==t) result.splice(l,1);
+		}
+	}
 	function choose(x,y){
-		var result=[...ground_types];
+		result=[...ground_types];
+		addType('g',4);
 		for(let j=-1;j<=1;j++){
 			for(let i=-1;i<=1;i++){
 				var t=typeAt(x+i,y+j);
 				if(inBounds(x+i,y+j) && t!= 'n'){
 					if(i==0||j==0){
-						result.unshift(t);
-						result.unshift(t);
-						result.unshift(t);
+						addType(t,2);
+						if(t=='w') addType(t,8);
+						if(t=='w') removeType('au');
+						if(t=='g') removeType('au');
+						if(t=='d') addType(t,4);
+						if(t=='s') addType(t,8);
 					} else {
 						result.unshift(t);
 					}
@@ -137,8 +194,7 @@ function random(min,max){
 }
 
 // START GAME
-console.log("Generating World\n...\nComplete!");
 generateWorld(width,height);
-//console.log(world);
-console.log(`Starting Game Clock at ${CPS} calculations per second.\n`)
+console.log(`Generating World with Seed: ${seed}\n...\nComplete!`);
 setInterval(loop,1000/CPS);
+console.log(`Starting Game Clock at ${CPS} calculations per second.\n`);

@@ -2,8 +2,8 @@ const obj=id=>document.querySelector(id);
 Node.prototype.on=function(a,b,c){this.addEventListener(a,b,c)};
 const random=(min,max)=>Math.floor(min+Math.random()*(max-min+1));
 const rColor=()=>'rgb('+random(0,255)+','+random(0,255)+','+random(0,255)+')';
-function show(id){obj(id).style.visibility=null;}
-function hide(id){obj(id).style.visibility='hidden';}
+function show(el){el.style.visibility=null;}
+function hide(el){el.style.visibility='hidden';}
 const create=id=>document.createElement(id);
 const distance=(x,y,x1,y1)=>Math.round(Math.sqrt((x-x1)**2+(y-y1)**2));
 function range(min,max){
