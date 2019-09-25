@@ -83,8 +83,8 @@ class Player{
 	constructor(name){
 		this.id=uniq++;
 		this.name=name;
-		this.x=rand(1,width);
-		this.y=rand(1,height);
+		this.x=rand(1,width-1);
+		this.y=rand(1,height-1);
 		this.population=[];
 		this.inventory=[];
 	}
@@ -183,7 +183,7 @@ function handleInputs(){
 				usr.y=ty;
 			}
 			usr.x = Math.min(Math.max(usr.x,1),width);
-			usr.y = Math.min(Math.max(usr.y,1),height);
+			usr.y = Math.min(Math.max(usr.y,1),height-1);
 		}
 	}
 	inputs=[];
