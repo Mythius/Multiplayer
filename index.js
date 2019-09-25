@@ -83,8 +83,8 @@ class Player{
 	constructor(name){
 		this.id=uniq++;
 		this.name=name;
-		this.x=5;
-		this.y=5;
+		this.x=rand(1,width);
+		this.y=rand(1,height);
 		this.population=[];
 		this.inventory=[];
 	}
@@ -101,7 +101,7 @@ class Block{
 
 // GAME FUNCTIONS 
 function pos(x,y){
-	return y*width-width-1+x;
+	return y*width-width+x-1;
 	//
 }
 
@@ -165,19 +165,25 @@ function loop(){
 }
 
 function handleInputs(){
-	var a=0,usus=[],l=users.length;
+	var a=0,l=users.length;
 	for(let i of inputs){
 		let u = users.filter(p=>p.id==i.id);
 		let usr = u ? u[0] : false;
-		usus.push(i.id);
 		if(usr){
 			var input = i.ins;
-			if(input.ArrowUp) usr.y--;
-			if(input.ArrowDown) usr.y++;
-			if(input.ArrowLeft) usr.x--;
-			if(input.ArrowRight) usr.x++;
+			let tx=usr.x;
+			let ty=usr.y;
+			if (input.ArrowUp) ty--;
+			if (input.ArrowDown) ty++;
+			if (input.ArrowLeft) tx--;
+			if (input.ArrowRight) tx++;
+			let ttype = typeAt(tx,ty+1);
+			if(ttype != 's' && ttype != 'au'){
+				usr.x=tx;
+				usr.y=ty;
+			}
 			usr.x = Math.min(Math.max(usr.x,1),width);
-			usr.y = Math.min(Math.max(usr.y,1),height-1);
+			usr.y = Math.min(Math.max(usr.y,1),height);
 		}
 	}
 	inputs=[];
@@ -193,8 +199,13 @@ function random(min,max){
 	return min-1+Math.ceil(rn*(1+max-min));
 }
 
+function rand(min,max){
+	return min+Math.floor(Math.random()*(max-min+1));
+}
+
 // START GAME
+console.log(`Generating World with Seed: ${seed}\n...`);
 generateWorld(width,height);
-console.log(`Generating World with Seed: ${seed}\n...\nComplete!`);
+console.log('Complete!')
 setInterval(loop,1000/CPS);
 console.log(`Starting Game Clock at ${CPS} calculations per second.\n`);

@@ -3,10 +3,9 @@ var id,connected=false,once=true;
 var colors=[{ch:'w',c:'blue'},{ch:'g',c:'green'},{ch:'s',c:'gray'},{ch:'t',c:'darkgreen'},{ch:'n',c:'black'},{ch:'d',c:'#654321'},{ch:'au',c:'gold'}];
 var ins={ArrowUp:false,ArrowDown:false,ArrowLeft:false,ArrowRight:false,z:false};
 const vw = 15,vh = 15;
-var td = Math.floor(window.innerHeight/vh);
+var td = window.innerHeight/vh;
 var plrs=[];
 
-console.log('Tile Size: '+td);
 var board = new Grid(obj('div'),vw,vh,td);
 board.setColorAll('#444');
 var ox = 8,oy = 8;
@@ -49,6 +48,7 @@ socket.on('render',function(w,h,world,players){
 socket.on('getInputs',()=>{socket.emit('inputs',{ins,id})});
 socket.on('newplayer',i=>{
 	plrs.push(new Player(i));
+	//
 });
 socket.on('discon',id=>{
 	let tem = plrs.filter(e=>e.id==id)[0];
@@ -64,7 +64,7 @@ function typeAt(x,y){
 	else return 'n';
 }
 function inBounds(x,y){
-	return x>1 && x<=width+1 && y>1 && y<height;
+	return x>1 && x<=width+1 && y>1 && y<=height;
 	//
 }
 function addEvents(){
@@ -74,6 +74,25 @@ function addEvents(){
 	document.on('keyup',function(e){
 		if(e.key in ins) ins[e.key]=false;
 	});
+	var drops = document.querySelectorAll('drop');
+	for(let d of drops){
+		var c = create('img');
+		c.classList.add('droparrow');
+		c.src='arrow.svg';
+		d.appendChild(c);
+		d.open=false;
+		c.on('click',function(){
+			if(d.open){
+				d.nextElementSibling.classList.remove('open');
+				d.open=false;
+				this.style.transform='';
+			} else {
+				d.nextElementSibling.classList.add('open');
+				d.open=true;
+				this.style.transform='rotate(0deg)';
+			}
+		});
+	}
 }
 function Player(i){
 	var x,y;
@@ -95,13 +114,51 @@ function Player(i){
 	this.display=function(mx,my){
 		let tx = x-mx+ox;
 		let ty = y-my+oy;
-		console.log(tx,ty);
-		if(tx>0&&tx<vw&&ty>0&&ty<vh){
+		if(tx>0 && tx<=vw && ty>0 && ty<=vh){
 			show(el);
 			ob.goTo(isme?ox:tx,isme?oy:ty);
 		} else {
-			ob.goTo(isme?ox:tx,isme?oy:ty);
+			ob.goTo(1,1);
 			hide(el);
 		}
 	}
 }
+function applyStyles(){
+	obj('div').innerHTML='';
+	td=window.innerHeight/vh;
+	board=new Grid(obj('div'),vw,vh,td);
+	board.setColorAll('gray');
+	var style = `calc((${window.innerWidth}px - ${td*15}px - 50px)/2)`;
+	obj('div').style.borderWidth=window.innerHeight-td*vh+'px';
+	obj('res').style.width=style;
+	obj('con').style.width=style;
+	obj('res').style.right=`calc((${window.innerWidth}px - ${td*15}px - 50px)/2 + 50px)`;
+	obj('bottom').style.width=`calc(${window.innerWidth}px - ${td*15}px - 50px)`;
+	obj('#weather').style.width=td*15+'px';
+	obj('#weather').style.height=td*15+'px';
+}
+
+function collapse(e) {
+  	var sectionHeight = e.scrollHeight;
+  	var eTransition = e.style.transition;
+  	e.style.transition = '';
+  	requestAnimationFrame(function() {
+  	  	e.style.height = sectionHeight + 'px';
+  	  	e.style.transition = eTransition;
+  	  	requestAnimationFrame(function() {
+  	  	  	e.style.height = 0 + 'px';
+  	  	});
+  	});
+}
+
+function expand(e) {
+  	var sectionHeight = e.scrollHeight;
+  	e.style.height = sectionHeight + 'px';
+  	e.addEventListener('transitionend', function(e) {
+  	  e.removeEventListener('transitionend', arguments.callee);
+  	  e.style.height = null;
+  	});
+}
+
+applyStyles();
+window.addEventListener('resize',applyStyles);

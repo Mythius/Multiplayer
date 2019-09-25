@@ -6,4 +6,8 @@ assets/player2.png,
 assets/favicon.ico,
 assets/gold.png,
 assets/tree.png,
-sam.js
+sam.js,
+main.js,
+animation.js,
+assets/empty.png,
+assets/arrow.svg
