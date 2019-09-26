@@ -27,7 +27,7 @@ function read(n,c){
 
 // CONNECTION VARIABLES
 const port = 80;
-const path = 'C:/Users/south/Desktop/multiplayer/';
+const path = 'C:/Users/20msouthwick/OneDrive - Davis School District/Desktop/Multiplayer Game/';
 
 
 // HANDLE GET REQUESTS FROM WEBPAGES
@@ -73,7 +73,7 @@ io.on('connection',function(socket){
 
 // GAME VARIABLES
 const CPS = 6, seed = 100;
-var users=[],world=[],inputs=[],uniq=0;
+var users=[],world=[],inputs=[],blocks=[],uniq=0;
 var width=80,height=80;
 // Water , Grass , Stone , Tree , Null , Dirt , Gold
 var ground_types=['w','g','g','g','s','t','d','au','n'];
@@ -91,11 +91,12 @@ class Player{
 }
 
 class Block{
-	constructor(t,x,y){
+	constructor(t,x,y,s){
 		this.type=t;
 		this.x=x;
 		this.y=y;
-		this.solid=false;
+		this.solid=s;
+		blocks.push(this);
 	}
 }
 
@@ -159,7 +160,7 @@ function generateWorld(w,h){
 }
 
 function loop(){
-	io.emit('render',width,height,world,users);
+	io.emit('render',width,height,world,users,blocks);
 	handleInputs();
 	io.emit('getInputs');
 }
@@ -178,7 +179,9 @@ function handleInputs(){
 			if (input.ArrowLeft) tx--;
 			if (input.ArrowRight) tx++;
 			let ttype = typeAt(tx,ty+1);
-			if(ttype != 's' && ttype != 'au'){
+			let item = itemAt(tx,ty);
+			item = item ? !item.solid : true;
+			if(ttype != 's' && ttype != 'au' && item){
 				usr.x=tx;
 				usr.y=ty;
 			}
@@ -187,6 +190,10 @@ function handleInputs(){
 		}
 	}
 	inputs=[];
+}
+function itemAt(x,y){
+	let temparr=blocks.filter(b=>b.x==x&&b.y==y);
+	if(temparr.length>0) return temparr[0];
 }
 
 // Values for Random Generator
@@ -209,3 +216,8 @@ generateWorld(width,height);
 console.log('Complete!')
 setInterval(loop,1000/CPS);
 console.log(`Starting Game Clock at ${CPS} calculations per second.\n`);
+
+
+
+new Block('chest',3,3,true);
+console.log(blocks);

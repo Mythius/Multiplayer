@@ -3,7 +3,7 @@ var SAM = function(grid,obj,w,h){
 	var go = grid.getObject();
 	var ox = go.offsetLeft,oy = go.offsetTop;
 	var x = 1,y = 1;
-
+	if(!obj) obj = create('img');
 	var ai_algor;
 
 	obj.style.position='absolute';
@@ -20,6 +20,7 @@ var SAM = function(grid,obj,w,h){
 		y=yp;
 		moveTo(ox+(x-1)*dim.t+(Math.max(dim.t-w,0)/2),oy+(y-1)*dim.t+(Math.max(dim.t-h,0)/2));
 	}
+	this.img=obj;
 	this.getPosition = function(){
 		return {x:x,y:y};
 	};
