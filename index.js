@@ -27,7 +27,7 @@ function read(n,c){
 
 // CONNECTION VARIABLES
 const port = 80;
-const path = __dirname;
+const path = __dirname+'/';
 
 
 // HANDLE GET REQUESTS FROM WEBPAGES
