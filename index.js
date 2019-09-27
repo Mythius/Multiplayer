@@ -27,7 +27,7 @@ function read(n,c){
 
 // CONNECTION VARIABLES
 const port = 80;
-const path = 'C:/Users/20msouthwick/OneDrive - Davis School District/Desktop/Multiplayer Game/';
+const path = __dirname;
 
 
 // HANDLE GET REQUESTS FROM WEBPAGES
