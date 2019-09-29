@@ -85,3 +85,7 @@ cont.open{
 	padding: 5px;
 	padding-left: 20px;
 }
+
+blocks > img{
+	image-rendering: pixelated;
+}

@@ -105,17 +105,14 @@ function pos(x,y){
 	return y*width-width+x-1;
 	//
 }
-
 function typeAt(x,y){
 	if(inBounds(x,y)) return world[pos(x,y)];
 	else return 'n';
 }
-
 function inBounds(x,y){
 	return x>0 && x<=width && y>0 && y<=height;
 	//
 }
-
 function generateWorld(w,h){
 	var result;
 	function addType(t,c){
@@ -158,13 +155,11 @@ function generateWorld(w,h){
 		}
 	}
 }
-
 function loop(){
 	io.emit('render',width,height,world,users,blocks);
 	handleInputs();
 	io.emit('getInputs');
 }
-
 function handleInputs(){
 	var a=0,l=users.length;
 	for(let i of inputs){
@@ -208,6 +203,7 @@ function random(min,max){
 
 function rand(min,max){
 	return min+Math.floor(Math.random()*(max-min+1));
+	//
 }
 
 // START GAME
@@ -218,6 +214,9 @@ setInterval(loop,1000/CPS);
 console.log(`Starting Game Clock at ${CPS} calculations per second.\n`);
 
 
-
-new Block('chest',3,3,true);
+console.log('Messages:\n');
+new Block('house',3,3,true);
+console.log('BLOCKS:')
 console.log(blocks);
+
+console.log('\n');

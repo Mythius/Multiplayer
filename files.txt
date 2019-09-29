@@ -11,4 +11,4 @@ main.js,
 animation.js,
 assets/empty.png,
 assets/arrow.svg,
-assets/chest.png
+assets/house.png

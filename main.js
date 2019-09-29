@@ -4,7 +4,7 @@ var colors=[{ch:'w',c:'blue'},{ch:'g',c:'green'},{ch:'s',c:'gray'},{ch:'t',c:'da
 var ins={ArrowUp:false,ArrowDown:false,ArrowLeft:false,ArrowRight:false,z:false};
 const vw = 15,vh = 15;
 var td = window.innerHeight/vh;
-var plrs=[];
+var plrs=[],blks=[];
 
 var board = new Grid(obj('div'),vw,vh,td);
 board.setColorAll('#444');
@@ -17,8 +17,10 @@ socket.on('id',p=>{
 	connected=true;
 	addEvents();
 });
-socket.on('render',function(w,h,world,players){
+socket.on('render',function(w,h,world,players,blocks){
 	if(connected){
+		obj('blocks').innerHTML='';
+		blks=[];
 		width=w;
 		height=h;
 		var me = players.filter(p=>p.id==id)[0];
@@ -42,6 +44,10 @@ socket.on('render',function(w,h,world,players){
 			let tempp = plrs.filter(t=>t.id==p.id)
 			tempp[0].setPos(p.x,p.y);
 			tempp[0].display(me.x,me.y);
+		}
+		for(let b of blocks){
+			var temp=new Block(b.type,b.x,b.y);
+			temp.display(me.x,me.y);
 		}
 	}
 });
@@ -94,6 +100,43 @@ function addEvents(){
 		});
 	}
 }
+function applyStyles(){
+	obj('div').innerHTML='';
+	td=window.innerHeight/vh;
+	board=new Grid(obj('div'),vw,vh,td);
+	board.setColorAll('gray');
+	var style = `calc((${window.innerWidth}px - ${td*15}px - 50px)/2)`;
+	obj('div').style.borderWidth=window.innerHeight-td*vh+'px';
+	obj('res').style.width=style;
+	obj('con').style.width=style;
+	obj('res').style.right=`calc((${window.innerWidth}px - ${td*15}px - 50px)/2 + 50px)`;
+	obj('bottom').style.width=`calc(${window.innerWidth}px - ${td*15}px - 50px)`;
+	obj('#weather').style.width=td*15+'px';
+	obj('#weather').style.height=td*15+'px';
+}
+function collapse(e) {
+  	var sectionHeight = e.scrollHeight;
+  	var eTransition = e.style.transition;
+  	e.style.transition = '';
+  	requestAnimationFrame(function() {
+  	  	e.style.height = sectionHeight + 'px';
+  	  	e.style.transition = eTransition;
+  	  	requestAnimationFrame(function() {
+  	  	  	e.style.height = 0 + 'px';
+  	  	});
+  	});
+}
+function expand(e) {
+  	var sectionHeight = e.scrollHeight;
+  	e.style.height = sectionHeight + 'px';
+  	e.addEventListener('transitionend', function(e) {
+  	  e.removeEventListener('transitionend', arguments.callee);
+  	  e.style.height = null;
+  	});
+}
+
+// CLASSES 
+
 function Player(i){
 	var x,y;
 	var el = create('img');
@@ -123,41 +166,19 @@ function Player(i){
 		}
 	}
 }
-function applyStyles(){
-	obj('div').innerHTML='';
-	td=window.innerHeight/vh;
-	board=new Grid(obj('div'),vw,vh,td);
-	board.setColorAll('gray');
-	var style = `calc((${window.innerWidth}px - ${td*15}px - 50px)/2)`;
-	obj('div').style.borderWidth=window.innerHeight-td*vh+'px';
-	obj('res').style.width=style;
-	obj('con').style.width=style;
-	obj('res').style.right=`calc((${window.innerWidth}px - ${td*15}px - 50px)/2 + 50px)`;
-	obj('bottom').style.width=`calc(${window.innerWidth}px - ${td*15}px - 50px)`;
-	obj('#weather').style.width=td*15+'px';
-	obj('#weather').style.height=td*15+'px';
-}
 
-function collapse(e) {
-  	var sectionHeight = e.scrollHeight;
-  	var eTransition = e.style.transition;
-  	e.style.transition = '';
-  	requestAnimationFrame(function() {
-  	  	e.style.height = sectionHeight + 'px';
-  	  	e.style.transition = eTransition;
-  	  	requestAnimationFrame(function() {
-  	  	  	e.style.height = 0 + 'px';
-  	  	});
-  	});
-}
-
-function expand(e) {
-  	var sectionHeight = e.scrollHeight;
-  	e.style.height = sectionHeight + 'px';
-  	e.addEventListener('transitionend', function(e) {
-  	  e.removeEventListener('transitionend', arguments.callee);
-  	  e.style.height = null;
-  	});
+function Block(t,x,y){
+	var sam = new SAM(board,false,td*3,td*3);
+	sam.img.src=t+'.png';
+	this.display=function(mx,my){
+		let tx = x-mx+ox;
+		let ty = y-my+oy;
+		if(tx>0 && tx<=vw && ty>0 && ty<=vh){
+			sam.goTo(tx,ty);
+			obj('blocks').appendChild(sam.img);
+		}
+	}
+	blks.push(this);
 }
 
 applyStyles();
