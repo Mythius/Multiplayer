@@ -11,4 +11,10 @@ main.js,
 animation.js,
 assets/empty.png,
 assets/arrow.svg,
-assets/house.png
+assets/house.png,
+assets/mine.png,
+assets/attac.png,
+assets/defend.png,
+assets/build.png,
+assets/farm.png,
+assets/gather.png

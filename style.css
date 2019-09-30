@@ -70,13 +70,11 @@ drop > p{
 	box-sizing: border-box;
 	padding-left: 19px;
 }
-
 cont{
     overflow:hidden;
     display: none;
     background-color: #666;
 }
-
 cont.open{
 	display: inline-table;
 	width: 100%;
@@ -85,7 +83,34 @@ cont.open{
 	padding: 5px;
 	padding-left: 20px;
 }
-
 blocks > img{
 	image-rendering: pixelated;
+}
+actions{
+	width: 100%;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	display: grid;
+	grid-template-columns: repeat(auto-fill,minmax(50px,1fr));
+	background-color: gray;
+	padding-top: 4px;
+}
+actions > div{
+	width: 90%;
+	height: 90%;
+	background-color: gray;
+	box-sizing: border-box;
+	border: 3px solid #444;
+	box-sizing: border-box;
+	margin: auto;
+	transition: background-color .2s;
+}
+actions > div > img{
+	width: 100%;
+	height: 100%;
+	image-rendering: pixelated;
+}
+actions>div:hover{
+	background-color: lightgray;
 }

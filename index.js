@@ -75,7 +75,6 @@ io.on('connection',function(socket){
 const CPS = 6, seed = 100;
 var users=[],world=[],inputs=[],blocks=[],uniq=0;
 var width=80,height=80;
-// Water , Grass , Stone , Tree , Null , Dirt , Gold
 var ground_types=['w','g','g','g','s','t','d','au','n'];
 
 // GAME CLASSES
@@ -134,11 +133,12 @@ function generateWorld(w,h){
 				if(inBounds(x+i,y+j) && t!= 'n'){
 					if(i==0||j==0){
 						addType(t,2);
-						if(t=='w') addType(t,8);
+						if(t=='w') addType(t,10);
 						if(t=='w') removeType('au');
 						if(t=='g') removeType('au');
 						if(t=='d') addType(t,4);
-						if(t=='s') addType(t,8);
+						if(t=='s') addType(t,10);
+						if(t=='t') addType(t,6)
 					} else {
 						result.unshift(t);
 					}
@@ -175,11 +175,8 @@ function handleInputs(){
 			if (input.ArrowRight) tx++;
 			let ttype = typeAt(tx,ty+1);
 			let item = itemAt(tx,ty);
-			item = item ? !item.solid : true;
-			if(ttype != 's' && ttype != 'au' && item){
-				usr.x=tx;
-				usr.y=ty;
-			}
+			usr.x = tx;
+			usr.y = ty;
 			usr.x = Math.min(Math.max(usr.x,1),width);
 			usr.y = Math.min(Math.max(usr.y,1),height-1);
 		}

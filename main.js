@@ -1,7 +1,7 @@
 var socket = io();
 var id,connected=false,once=true;
 var colors=[{ch:'w',c:'blue'},{ch:'g',c:'green'},{ch:'s',c:'gray'},{ch:'t',c:'darkgreen'},{ch:'n',c:'black'},{ch:'d',c:'#654321'},{ch:'au',c:'gold'}];
-var ins={ArrowUp:false,ArrowDown:false,ArrowLeft:false,ArrowRight:false,z:false};
+var ins={ArrowUp:false,ArrowDown:false,ArrowLeft:false,ArrowRight:false,space:false};
 const vw = 15,vh = 15;
 var td = window.innerHeight/vh;
 var plrs=[],blks=[];
@@ -45,6 +45,7 @@ socket.on('render',function(w,h,world,players,blocks){
 			tempp[0].setPos(p.x,p.y);
 			tempp[0].display(me.x,me.y);
 		}
+
 		for(let b of blocks){
 			var temp=new Block(b.type,b.x,b.y);
 			temp.display(me.x,me.y);
@@ -75,10 +76,12 @@ function inBounds(x,y){
 }
 function addEvents(){
 	document.on('keydown',function(e){
-		if(e.key in ins) ins[e.key]=true;
+		if(e.key==" ") ins.space=true;
+		else if(e.key in ins) ins[e.key]=true;
 	});
 	document.on('keyup',function(e){
-		if(e.key in ins) ins[e.key]=false;
+		if(e.key==" ") ins.space=false;
+		else if(e.key in ins) ins[e.key]=false;
 	});
 	var drops = document.querySelectorAll('drop');
 	for(let d of drops){
@@ -114,26 +117,6 @@ function applyStyles(){
 	obj('#weather').style.width=td*15+'px';
 	obj('#weather').style.height=td*15+'px';
 }
-function collapse(e) {
-  	var sectionHeight = e.scrollHeight;
-  	var eTransition = e.style.transition;
-  	e.style.transition = '';
-  	requestAnimationFrame(function() {
-  	  	e.style.height = sectionHeight + 'px';
-  	  	e.style.transition = eTransition;
-  	  	requestAnimationFrame(function() {
-  	  	  	e.style.height = 0 + 'px';
-  	  	});
-  	});
-}
-function expand(e) {
-  	var sectionHeight = e.scrollHeight;
-  	e.style.height = sectionHeight + 'px';
-  	e.addEventListener('transitionend', function(e) {
-  	  e.removeEventListener('transitionend', arguments.callee);
-  	  e.style.height = null;
-  	});
-}
 
 // CLASSES 
 
@@ -157,13 +140,8 @@ function Player(i){
 	this.display=function(mx,my){
 		let tx = x-mx+ox;
 		let ty = y-my+oy;
-		if(tx>0 && tx<=vw && ty>0 && ty<=vh){
-			show(el);
-			ob.goTo(isme?ox:tx,isme?oy:ty);
-		} else {
-			ob.goTo(1,1);
-			hide(el);
-		}
+		hide(el);
+		board.getTile(8,8).style.border='3px dashed black';
 	}
 }
 
