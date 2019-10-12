@@ -1,0 +1,8 @@
+<body>
+<script>
+
+var e = {'I':1,'V':5,'X':10,'L':50,'C':100,'D':500,'M':1000};
+document.body.innerHTML = prompt('Enter Numeral').split('').map(a=>e[a.toUpperCase()]).reverse().reduce((a,b,c,d)=>b<(d[c-1]||d[d.length-1])?a-=b:a+=b);
+
+</script>
+</body>

@@ -75,7 +75,7 @@ io.on('connection',function(socket){
 const CPS = 6, seed = 100;
 var users=[],world=[],inputs=[],blocks=[],uniq=0;
 var width=80,height=80;
-var ground_types=['w','g','g','g','s','t','d','au','n'];
+var ground_types=['w','g','g','s','t','d','au','n'];
 
 // GAME CLASSES
 class Player{
@@ -90,12 +90,26 @@ class Player{
 }
 
 class Block{
-	constructor(t,x,y,s){
+	constructor(t,x,y,s=true,w=1,h=1){
 		this.type=t;
 		this.x=x;
 		this.y=y;
 		this.solid=s;
+		this.width=w;
+		this.height=h;
 		blocks.push(this);
+	}
+}
+
+class aPeople{
+	constructor(player,a=20,e=0){
+		this.health = 20;
+		this.job;
+		this.age = a;
+		this.expirience = e;
+		this.owner = player;
+		this.type='none';
+		player.population.push(this);
 	}
 }
 
@@ -133,12 +147,15 @@ function generateWorld(w,h){
 				if(inBounds(x+i,y+j) && t!= 'n'){
 					if(i==0||j==0){
 						addType(t,2);
-						if(t=='w') addType(t,10);
+						if(t=='w') addType(t,40);
+						if(t=='g') addType(t,30);
+						if(t=='d') addType(t,25);
+						if(t=='s') addType(t,40);
+						if(t=='s') addType('au',3);
+						if(t=='t') addType(t,20);
 						if(t=='w') removeType('au');
 						if(t=='g') removeType('au');
-						if(t=='d') addType(t,4);
-						if(t=='s') addType(t,10);
-						if(t=='t') addType(t,6)
+						if(t=='t') removeType('au');
 					} else {
 						result.unshift(t);
 					}
@@ -212,7 +229,7 @@ console.log(`Starting Game Clock at ${CPS} calculations per second.\n`);
 
 
 console.log('Messages:\n');
-new Block('house',3,3,true);
+new Block('house',7,1,true,1,1);
 console.log('BLOCKS:')
 console.log(blocks);
 

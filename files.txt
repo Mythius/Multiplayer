@@ -1,8 +1,6 @@
 helpers.js,
 grid.js,
 style.css,
-assets/player1.png,
-assets/player2.png,
 assets/favicon.ico,
 assets/gold.png,
 assets/tree.png,
@@ -17,4 +15,8 @@ assets/attac.png,
 assets/defend.png,
 assets/build.png,
 assets/farm.png,
-assets/gather.png
+assets/gather.png,
+assets/stone.png,
+assets/water.png,
+assets/grass.png,
+assets/dirt.png

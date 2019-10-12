@@ -1,6 +1,6 @@
 var socket = io();
 var id,connected=false,once=true;
-var colors=[{ch:'w',c:'blue'},{ch:'g',c:'green'},{ch:'s',c:'gray'},{ch:'t',c:'darkgreen'},{ch:'n',c:'black'},{ch:'d',c:'#654321'},{ch:'au',c:'gold'}];
+var colors=[{ch:'w',c:'blue'},{ch:'g',c:'#080'},{ch:'s',c:'gray'},{ch:'t',c:'darkgreen'},{ch:'n',c:'black'},{ch:'d',c:'#654321'},{ch:'au',c:'gold'}];
 var ins={ArrowUp:false,ArrowDown:false,ArrowLeft:false,ArrowRight:false,space:false};
 const vw = 15,vh = 15;
 var td = window.innerHeight/vh;
@@ -39,15 +39,23 @@ socket.on('render',function(w,h,world,players,blocks){
 			let c = board.getColor(x,y);
 			if(c=='gold') board.setImage(x,y,'gold.png');
 			if(c=='darkgreen') board.setImage(x,y,'tree.png');
+			if(c=='gray') board.setImage(x,y,'stone.png');
+			if(c=='blue') board.setImage(x,y,'water.png');
+			if(c=='rgb(0, 136, 0)') board.setImage(x,y,'grass.png');
+			if(c=='rgb(101, 67, 33)') board.setImage(x,y,'dirt.png');
+			if(c=='darkgreen'){
+				board.setImage(x,y,'grass.png');
+				blocks.push({type:'tree',x:ox+x-1,y:oy+y-1,solid:true});
+			} 
 		});
 		for(let p of players){
-			let tempp = plrs.filter(t=>t.id==p.id)
+			let tempp = plrs.filter(t=>t.id==p.id);
 			tempp[0].setPos(p.x,p.y);
 			tempp[0].display(me.x,me.y);
 		}
 
 		for(let b of blocks){
-			var temp=new Block(b.type,b.x,b.y);
+			var temp=new Block(b.type,b.x,b.y,b.width,b.height);
 			temp.display(me.x,me.y);
 		}
 	}
@@ -124,11 +132,6 @@ function Player(i){
 	var x,y;
 	var el = create('img');
 	var isme=i==id;
-	if(i==id){
-		el.src='player1.png';
-	} else {
-		el.src='player2.png';
-	}
 	obj('players').appendChild(el);
 	var ob = new SAM(board,el,td-5,td-5);
 	this.id=i;
@@ -145,8 +148,8 @@ function Player(i){
 	}
 }
 
-function Block(t,x,y){
-	var sam = new SAM(board,false,td*3,td*3);
+function Block(t,x,y,w=1,h=1){
+	var sam = new SAM(board,false,td*w,td*h);
 	sam.img.src=t+'.png';
 	this.display=function(mx,my){
 		let tx = x-mx+ox;
