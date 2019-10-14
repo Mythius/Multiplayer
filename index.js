@@ -72,7 +72,7 @@ io.on('connection',function(socket){
 });
 
 // GAME VARIABLES
-const CPS = 6, seed = 100;
+const CPS = 6, seed = 25;
 var users=[],world=[],inputs=[],blocks=[],uniq=0;
 var width=80,height=80;
 var ground_types=['w','g','g','s','t','d','au','n'];
