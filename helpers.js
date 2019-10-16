@@ -4,7 +4,11 @@ const random=(min,max)=>Math.floor(min+Math.random()*(max-min+1));
 const rColor=()=>'rgb('+random(0,255)+','+random(0,255)+','+random(0,255)+')';
 function show(el){el.style.visibility=null;}
 function hide(el){el.style.visibility='hidden';}
-const create=id=>document.createElement(id);
+function create(type,text){
+    let c = document.createElement(type);
+    if(text) c.innerHTML = text;
+    return c;
+}
 const distance=(x,y,x1,y1)=>Math.round(Math.sqrt((x-x1)**2+(y-y1)**2));
 function range(min,max){
     let a=[],i;

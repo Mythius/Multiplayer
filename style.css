@@ -114,3 +114,14 @@ actions > div > img{
 actions>div:hover{
 	background-color: lightgray;
 }
+person{
+	display: block;
+	border-bottom: 1px solid gray;
+	cursor: default;
+}
+person:last-of-type{
+	border-bottom: 0;
+}
+person:hover{
+	background-color: gray;
+}

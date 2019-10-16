@@ -107,8 +107,10 @@ class aPeople{
 		this.job;
 		this.age = a;
 		this.expirience = e;
-		this.owner = player;
-		this.type='none';
+		this.owner = player.id;
+		this.type='default';
+		this.x=player.x;
+		this.y=player.y;
 		player.population.push(this);
 	}
 }
@@ -196,6 +198,15 @@ function handleInputs(){
 			usr.y = ty;
 			usr.x = Math.min(Math.max(usr.x,1),width);
 			usr.y = Math.min(Math.max(usr.y,1),height-1);
+			if(input.space){
+				if(usr){
+					var p = usr.population.filter(p=>p.x==tx&&p.y==ty);
+					p = p ? p[0] : false;
+					if(!p){
+						new aPeople(usr);
+					}
+				}
+			}
 		}
 	}
 	inputs=[];

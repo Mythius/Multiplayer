@@ -10,6 +10,7 @@ var board = new Grid(obj('div'),vw,vh,td);
 board.setColorAll('#444');
 var ox = 8,oy = 8;
 var width,height;
+var SELECTED;
 
 socket.on('getUsername',()=>{socket.emit('user',prompt('Enter a Username'))});
 socket.on('id',p=>{
@@ -20,6 +21,7 @@ socket.on('id',p=>{
 socket.on('render',function(w,h,world,players,blocks){
 	if(connected){
 		obj('blocks').innerHTML='';
+		obj('players').innerHTML='';
 		blks=[];
 		width=w;
 		height=h;
@@ -52,12 +54,16 @@ socket.on('render',function(w,h,world,players,blocks){
 			let tempp = plrs.filter(t=>t.id==p.id);
 			tempp[0].setPos(p.x,p.y);
 			tempp[0].display(me.x,me.y);
+			for(let pp of p.population){
+				let p = new Person(pp.type,pp.x,pp.y);
+				p.display(me.x,me.y);
+			}
 		}
-
 		for(let b of blocks){
 			var temp=new Block(b.type,b.x,b.y,b.width,b.height);
 			temp.display(me.x,me.y);
 		}
+		updateMenu(me);
 	}
 });
 socket.on('getInputs',()=>{socket.emit('inputs',{ins,id})});
@@ -125,6 +131,19 @@ function applyStyles(){
 	obj('#weather').style.width=td*15+'px';
 	obj('#weather').style.height=td*15+'px';
 }
+function updateMenu(me){
+	var popMenu = obj('#p');
+	popMenu.innerHTML='';
+	popMenu.previousElementSibling.children[0].innerHTML = `Population (${me.population.length})`;
+	for(var p of me.population){
+		var box = create('person');
+		box.appendChild(create('b',p.type.toUpperCase()));
+		popMenu.appendChild(box);
+		box.on('click',function(){
+			SELECTED = p;
+		});
+	}
+}
 
 // CLASSES 
 
@@ -160,6 +179,20 @@ function Block(t,x,y,w=1,h=1){
 		}
 	}
 	blks.push(this);
+}
+
+function Person(t,x,y){
+	var sam = new SAM(board,false,td*.9,td*.9);
+	sam.img.src=t+'.png';
+	this.display=function(mx,my){
+		let tx = x-mx+ox;
+		let ty = y-my+oy;
+		if(tx>0 && tx<=vw && ty>0 && ty<=vh){
+			sam.goTo(tx,ty);
+			obj('players').appendChild(sam.img);
+		}
+	}
+	plrs.push(this);
 }
 
 applyStyles();

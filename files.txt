@@ -19,4 +19,5 @@ assets/gather.png,
 assets/stone.png,
 assets/water.png,
 assets/grass.png,
-assets/dirt.png
+assets/dirt.png,
+assets/people/default.png
