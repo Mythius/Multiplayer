@@ -69,13 +69,21 @@ io.on('connection',function(socket){
 		users.splice(users.indexOf(usr),1);
 		io.emit('discon',localid);
 	});
+	socket.on('updobj',obj=>{
+		var p = allpeople.filter(o=>o.id==obj.id);
+		p = p ? p[0] : false;
+		if(p){
+			p.type = obj.type;
+		}
+	});
 });
 
 // GAME VARIABLES
-const CPS = 6, seed = 25;
-var users=[],world=[],inputs=[],blocks=[],uniq=0;
-var width=80,height=80;
+const CPS = 8, seed = 25;
+var users=[],world=[],inputs=[],blocks=[],uniq=0,upid=0;
+var width=60,height=60;
 var ground_types=['w','g','g','s','t','d','au','n'];
+var allpeople = [];
 
 // GAME CLASSES
 class Player{
@@ -104,6 +112,7 @@ class Block{
 class aPeople{
 	constructor(player,a=20,e=0){
 		this.health = 20;
+		this.id = upid++;
 		this.job;
 		this.age = a;
 		this.expirience = e;
@@ -112,6 +121,7 @@ class aPeople{
 		this.x=player.x;
 		this.y=player.y;
 		player.population.push(this);
+		allpeople.push(this);
 	}
 }
 

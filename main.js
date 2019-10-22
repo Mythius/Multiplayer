@@ -21,7 +21,7 @@ socket.on('id',p=>{
 socket.on('render',function(w,h,world,players,blocks){
 	if(connected){
 		obj('blocks').innerHTML='';
-		obj('players').innerHTML='';
+		obj('people').innerHTML='';
 		blks=[];
 		width=w;
 		height=h;
@@ -105,6 +105,7 @@ function addEvents(){
 		d.appendChild(c);
 		d.open=false;
 		c.on('click',function(){
+			SELECTED = undefined;
 			if(d.open){
 				d.nextElementSibling.classList.remove('open');
 				d.open=false;
@@ -113,6 +114,18 @@ function addEvents(){
 				d.nextElementSibling.classList.add('open');
 				d.open=true;
 				this.style.transform='rotate(0deg)';
+			}
+		});
+	}
+	var types = ['hunter / gatherer','defender','farmer','miner','soldier','builder'];
+	var buttons = document.querySelectorAll('.occ');
+	var i=0;
+	for(let b of buttons){
+		let t = i++;
+		b.on('click',function(){
+			if(SELECTED){
+				socket.emit('updobj',{id:SELECTED.id,type:types[t]});
+				SELECTED = undefined;
 			}
 		});
 	}
@@ -132,16 +145,25 @@ function applyStyles(){
 	obj('#weather').style.height=td*15+'px';
 }
 function updateMenu(me){
+	obj('con').innerHTML = `Current Position: (${me.x},${me.y})`;
 	var popMenu = obj('#p');
 	popMenu.innerHTML='';
 	popMenu.previousElementSibling.children[0].innerHTML = `Population (${me.population.length})`;
-	for(var p of me.population){
+	for(let p of me.population){
 		var box = create('person');
-		box.appendChild(create('b',p.type.toUpperCase()));
+		var text = p.type + ` (${p.x},${p.y})`;
+		box.appendChild(create('b', text.toUpperCase()));
 		popMenu.appendChild(box);
-		box.on('click',function(){
-			SELECTED = p;
+		box.on('mouseup',function(){
+			if(SELECTED && SELECTED.id == p.id){
+				SELECTED = undefined;
+			} else {
+				SELECTED = p;
+			}
 		});
+		if(SELECTED && p.id == SELECTED.id){
+			box.style.backgroundColor='#99f';
+		}
 	}
 }
 
@@ -151,7 +173,7 @@ function Player(i){
 	var x,y;
 	var el = create('img');
 	var isme=i==id;
-	obj('players').appendChild(el);
+	obj('people').appendChild(el);
 	var ob = new SAM(board,el,td-5,td-5);
 	this.id=i;
 	this.img = el;
@@ -183,13 +205,14 @@ function Block(t,x,y,w=1,h=1){
 
 function Person(t,x,y){
 	var sam = new SAM(board,false,td*.9,td*.9);
-	sam.img.src=t+'.png';
+	var sr = t.replace(/[^A-Z0-9]/gi,'');
+	sam.img.src=sr+'.png';
 	this.display=function(mx,my){
 		let tx = x-mx+ox;
 		let ty = y-my+oy;
 		if(tx>0 && tx<=vw && ty>0 && ty<=vh){
 			sam.goTo(tx,ty);
-			obj('players').appendChild(sam.img);
+			obj('people').appendChild(sam.img);
 		}
 	}
 	plrs.push(this);

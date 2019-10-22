@@ -20,4 +20,10 @@ assets/stone.png,
 assets/water.png,
 assets/grass.png,
 assets/dirt.png,
-assets/people/default.png
+assets/people/default.png,
+assets/people/farmer.png,
+assets/people/builder.png,
+assets/people/soldier.png,
+assets/people/huntergatherer.png,
+assets/people/miner.png,
+assets/people/defender.png
